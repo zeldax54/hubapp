@@ -2,21 +2,14 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
-  IconButton,
-  Hidden,
-  withStyles,
+  Button,  
+  Hidden,  
 } from "@material-ui/core";
-import React, { Component } from "react";
-import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-
-import HomeIcon from "@material-ui/icons/Home";
-import HowToRegIcon from "@material-ui/icons/HowToReg";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
-import BookIcon from "@material-ui/icons/Book";
 import { Link } from "react-router-dom";
 import MyDrawer from "./MyDrawer";
+import {connect} from 'react-redux'
 
 const useStyles = makeStyles({
   TypographyStyles: {
@@ -30,45 +23,19 @@ const useStyles = makeStyles({
   },
 });
 
-const menuItems = () => [
-  {
-    link: "/",
-    name: "Home",
-    icon: <HomeIcon className="text-white" />,
-  },
-  {
-    link: "/blog",
-    name: "Blog",
-    icon: <BookIcon className="text-white" />,
-  },
-  {
-    name: "Register",
-    //  onClick: openRegisterDialog,
-    icon: <HowToRegIcon className="text-white" />,
-  },
-  {
-    name: "Login",
-    // onClick: openLoginDialog,
-    icon: <LockOpenIcon className="text-white" />,
-  },
-];
 
-const Navbar = () => {
+const Navbar = ({nvarMenuItems,messageApp,SendClick}) => {
   const classes = useStyles();
-  const menu = menuItems();
 
-  const OpenMovileMenu = () => {
-    alert("asd");
-  };
   return (
     <>
       <AppBar position="static">
         <Toolbar>
           <Typography className={classes.TypographyStyles}>
-            This is a test RemateApp
+            {messageApp}
           </Typography>
           <Hidden smDown>
-            {menu.map((element) => {
+            {nvarMenuItems.map((element) => {
               if (element.link) {
                 return (
                   <Link
@@ -90,20 +57,35 @@ const Navbar = () => {
                 <Button
                   color="secondary"
                   size="large"
-                  //   onClick={element.onClick}
-                  classes={{ text: classes.menuButtonText }}
-                  key={element.name}
-                >
+                   onClick={()=>SendClick(element.name)}
+                   classes={{ text: classes.menuButtonText }}
+                   key={element.name}
+                  >
                   {element.name}
                 </Button>
               );
             })}
           </Hidden>
-          <MyDrawer elementos={menu} anchor="right" />
+          <MyDrawer />
         </Toolbar>
       </AppBar>     
     </>
   );
 };
 
-export default Navbar;
+const mapStateToProps = state =>({
+  nvarMenuItems:state.nvarMenuItems, 
+  messageApp:state.messageApp
+})
+
+const mapDispachToProps=dispatch=>({
+  SendClick(name){
+    dispatch({
+      type:name      
+    })
+  }
+   
+
+})
+
+export default connect(mapStateToProps,mapDispachToProps)(Navbar);

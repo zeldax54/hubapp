@@ -7,6 +7,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import MenuIcon from "@material-ui/icons/Menu";
 import { IconButton, Hidden, List } from "@material-ui/core";
+import {connect} from 'react-redux'
 
 const useStyles = makeStyles({
   list: {
@@ -18,7 +19,7 @@ const useStyles = makeStyles({
 });
 
 //anchor 'left', 'right', 'top', 'bottom'
-export default function MyDrawer(props) {
+const  MyDrawer = ({nvarMenuItems,navbarAnchor,SendClick}) =>{
   const classes = useStyles();
 
   const [state, setState] = React.useState({
@@ -48,29 +49,29 @@ export default function MyDrawer(props) {
           className={classes.menuButton}
           color="inherit"
           aria-label="menu"
-          onClick={toggleDrawer(props.anchor, true)}
+          onClick={toggleDrawer(navbarAnchor, true)}
         >
           <MenuIcon />
         </IconButton>
       </Hidden>
       <Drawer
-        anchor={props.anchor}
-        open={state[props.anchor]}
-        onClose={toggleDrawer(props.anchor, false)}
+        anchor={navbarAnchor}
+        open={state[navbarAnchor]}
+        onClose={toggleDrawer(navbarAnchor, false)}
       >
         <div
           className={clsx(classes.list, {
             [classes.fullList]:
-              props.anchor === "top" || props.anchor === "bottom",
+            navbarAnchor === "top" || navbarAnchor === "bottom",
           })}
           role="presentation"
-          onClick={toggleDrawer(props.anchor, false)}
-          onKeyDown={toggleDrawer(props.anchor, false)}
+          onClick={toggleDrawer(navbarAnchor, false)}
+          onKeyDown={toggleDrawer(navbarAnchor, false)}
         >
           <List>
-            {props.elementos.map((elemento) => {
+            {nvarMenuItems.map((elemento) => {
               return (
-                <ListItem button key={elemento.name}>
+                <ListItem button key={elemento.name} onClick={()=>SendClick(elemento.name)}>
                   {<ListItemIcon>{elemento.icon}</ListItemIcon>}
                   <ListItemText primary={elemento.name} />
                 </ListItem>
@@ -82,3 +83,20 @@ export default function MyDrawer(props) {
     </>
   );
 }
+
+const mapStateToProps = state =>({
+  nvarMenuItems:state.nvarMenuItems,
+  navbarAnchor:state.navbarAnchor
+})
+
+const mapDispachToProps=dispatch=>({
+
+  SendClick(name){
+    dispatch({
+      type:name      
+    })
+  }
+
+})
+
+export default connect (mapStateToProps,mapDispachToProps)(MyDrawer)
