@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store";
+import Charge from './components/Charge'
 import LoginDialog from "./components/LoginDialog";
 import RegisterDialog from "./components/RegisterDialog";
 import InfoDialog from "./components/InfoDialog";
@@ -24,6 +25,7 @@ const App = () => {
 
             <Grid item xs={1} sm={2} />
           </Grid>
+          <Charge/>
           <LoginDialog />
           <RegisterDialog />
           <InfoDialog />

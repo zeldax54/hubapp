@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -11,35 +11,79 @@ import { makeStyles } from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 
 const useStyles = makeStyles((theme) => ({
+  separator: {
+    "margin-top": "10px",
+  },
   button: {
     margin: theme.spacing(1),
   },
 }));
 const LoginDialog = ({ openLogindialog, handleClose }) => {
   const classes = useStyles();
+ 
+  const [email, setEmail] = useState('');
+  const [emailerror, setEmailError] = useState(false);
+  const [emailErrorText] = useState('El email es requerido');
+ 
+  const [password, setPassword] = useState('');
+  const [passworderror, setPasswordError] = useState(false);
+  const [passwordErrorText] = useState('La contraseña es requerida');
+  const [disableSendBtn, setDisableSendBtn] = useState(false);
 
+  const SetValues = (field,value)=>{
+    if(field==="email"){
+      setEmail(value);
+      setEmailError(value === undefined || value.trim() === "");    
+    }       
+    if(field==="password"){
+      setPassword(value);   
+      setPasswordError(value === undefined || value.trim() === "");    
+    } 
+    setDisableSendBtn(value === undefined || value.trim() === ""); 
+  }
   return (
     <div>
       <span> {openLogindialog}</span>
       <Dialog
+       disableBackdropClick
+       disableEscapeKeyDown
         open={openLogindialog}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+        <DialogTitle id="form-dialog-title">Login</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
+            Ingrese tecleando su usuario y contraseña.
           </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
-            fullWidth
-          />
+          <div className={classes.separator}>
+              <TextField
+                required
+                id="email"
+                label="Email"
+                variant="outlined"
+                type="email"
+                fullWidth              
+                onChange={(e) => SetValues('email',e.target.value)}
+                error = { emailerror }
+                helperText = { emailerror && emailErrorText}   
+                       
+              />
+            </div>   
+            <div className={classes.separator}>
+            <TextField
+              required
+              id="password"
+              label="Password"
+              autoComplete="current-password"
+              variant="outlined"
+              type="password"
+              fullWidth
+              onChange={(e) => SetValues('password',e.target.value)}
+              error = {passworderror}
+              helperText = { passworderror && passwordErrorText }   
+            />
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
@@ -49,10 +93,10 @@ const LoginDialog = ({ openLogindialog, handleClose }) => {
           <Button
         variant="contained"
         color="primary"
-        className={classes.button}
-        endIcon={<Icon>send</Icon>}
-      >
-        Send
+        className={classes.button}        
+        disabled={disableSendBtn}
+        >
+        Login
       </Button>
         </DialogActions>
       </Dialog>

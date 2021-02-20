@@ -6,6 +6,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -18,63 +19,78 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
   },
+  root: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2),
+    },
+  },
 }));
-
-
 
 const RegisterDialog = ({
   openRegisterDialog,
   handleClose,
   urlMidgardRegister,
   handleOpenInfo,
-  handleOpenLogin
+  handleToggleCharge,
+  handleOpenLogin,
 }) => {
   const classes = useStyles();
+  const [loading, setLoading] = useState(false);
   const [sendDisabled, setSendDisabled] = useState(true);
+
   const [userValues, setUserValues] = useState({
-    emailerror:false,
-    passworderror:false,
-    confirmedPassworderror:false
+    emailerror: false,
+    passworderror: false,
+    confirmedPassworderror: false,
   });
   const [emailerror, setEmailerror] = useState(false);
   const [passworderror, setPassworderror] = useState(false);
   const [confirmedPassworderror, setConfirmedPassworderror] = useState(false);
-  const [passwordErrorText, setPasswordErrorText] = useState('La contraseña es requerida');
-  const [emailErrorText, setEmailErrorText] = useState('El email es requerido');
+  const [passwordErrorText, setPasswordErrorText] = useState(
+    "La contraseña es requerida"
+  );
+  const [emailErrorText, setEmailErrorText] = useState("El email es requerido");
   const [disabledSend, setDisabledSend] = useState(false);
   const urlRegister = process.env.REACT_APP_URL_MIDGARD + urlMidgardRegister;
 
-
-  const setValues = (valor,dato) => {
-    if(valor==='email')
-      userValues.email=dato;
-    if(valor==='password')
-      userValues.password=dato;
-    if(valor==='confirmedPassword')
-      userValues.confirmedPassword=dato;   
-    let emailerror = userValues.email===undefined || userValues.email.trim()==="" ? true : false; 
-    let passworderror = userValues.password===undefined || userValues.password.trim()==="" ? true : false;
-    let confirmedPassworderror = userValues.confirmedPassword===undefined||userValues.confirmedPassword.trim()==="" ? true : false;
+  const setValues = (valor, dato) => {
+    if (valor === "email") userValues.email = dato;
+    if (valor === "password") userValues.password = dato;
+    if (valor === "confirmedPassword") userValues.confirmedPassword = dato;
+    let emailerror =
+      userValues.email === undefined || userValues.email.trim() === ""
+        ? true
+        : false;
+    let passworderror =
+      userValues.password === undefined || userValues.password.trim() === ""
+        ? true
+        : false;
+    let confirmedPassworderror =
+      userValues.confirmedPassword === undefined ||
+      userValues.confirmedPassword.trim() === ""
+        ? true
+        : false;
     setUserValues(userValues);
     setEmailerror(emailerror);
     let disabledbtn = false;
-   
-    if(userValues.password !== userValues.confirmedPassword){  
-     
-       setPasswordErrorText('Las contraseñas deben coincidir');
-       disabledbtn=true;
-       passworderror=true;
-       confirmedPassworderror=true;
+
+    if (userValues.password !== userValues.confirmedPassword) {
+      setPasswordErrorText("Las contraseñas deben coincidir");
+      disabledbtn = true;
+      passworderror = true;
+      confirmedPassworderror = true;
     }
     setPassworderror(passworderror);
     setConfirmedPassworderror(confirmedPassworderror);
     setDisabledSend(disabledbtn);
-
-   }
+  };
 
   return (
     <div>
       <Dialog
+        disableBackdropClick
+        disableEscapeKeyDown
         open={openRegisterDialog}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
@@ -82,25 +98,24 @@ const RegisterDialog = ({
         <DialogTitle id="form-dialog-title">Registrarse</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Para suscribirse a este sitio, por favor complete estos datos.
-            Le enviaremos actualizaciones ocasionalmente.
+            Para suscribirse a este sitio, por favor complete estos datos. Le
+            enviaremos actualizaciones ocasionalmente.
           </DialogContentText>
-            
-            <div className={classes.separator}>
-              <TextField
-                required
-                id="email"
-                label="Email"
-                variant="outlined"
-                type="email"
-                fullWidth              
-                onChange={(e) => setValues('email',e.target.value)}
-                error = { emailerror }
-                helperText = { emailerror && emailErrorText}   
-                       
-              />
-            </div>          
-          
+
+          <div className={classes.separator}>
+            <TextField
+              required
+              id="email"
+              label="Email"
+              variant="outlined"
+              type="email"
+              fullWidth
+              onChange={(e) => setValues("email", e.target.value)}
+              error={emailerror}
+              helperText={emailerror && emailErrorText}
+            />
+          </div>
+
           <div className={classes.separator}>
             <TextField
               required
@@ -110,9 +125,9 @@ const RegisterDialog = ({
               variant="outlined"
               type="password"
               fullWidth
-              onChange={(e) => setValues('password',e.target.value)}
-              error = {passworderror}
-              helperText = { passworderror && passwordErrorText }   
+              onChange={(e) => setValues("password", e.target.value)}
+              error={passworderror}
+              helperText={passworderror && passwordErrorText}
             />
           </div>
           <div className={classes.separator}>
@@ -124,9 +139,9 @@ const RegisterDialog = ({
               variant="outlined"
               type="password"
               fullWidth
-              onChange={(e) => setValues('confirmedPassword',e.target.value)}
-              error = {confirmedPassworderror}
-              helperText = { confirmedPassworderror && passwordErrorText }   
+              onChange={(e) => setValues("confirmedPassword", e.target.value)}
+              error={confirmedPassworderror}
+              helperText={confirmedPassworderror && passwordErrorText}
             />
           </div>
           {sendDisabled && (
@@ -142,13 +157,14 @@ const RegisterDialog = ({
           )}
         </DialogContent>
         <DialogActions>
-          {!sendDisabled && (
-            <>
-              <Button onClick={handleClose} color="primary">
-                Cancelar
-              </Button>
+          <>
+            <Button onClick={handleClose} color="primary">
+              Cancelar
+            </Button>
+            {!sendDisabled && (
               <Button
                 onClick={() => {
+                  setLoading(true);
                   setDisabledSend(true);
                   let jsonNewUser = {
                     email: userValues.email,
@@ -159,27 +175,30 @@ const RegisterDialog = ({
                     .registerUser(jsonNewUser, urlRegister)
                     .then((response) => {
                       console.log(response);
-                      if(response.code === 500)
-                         handleOpenInfo(response.message);     
-                      else{
-
-                        handleOpenLogin(userValues.email);
+                      if (response.code === 500)
+                        handleOpenInfo(response.message);
+                      else {
+                        //  handleOpenLogin(userValues.email);
                       }
-                      
-                         setDisabledSend(false);
+
+                      setDisabledSend(false);
                     });
-                   }}
+                  setLoading(false);
+                }}
                 variant="contained"
                 color="primary"
                 className={classes.button}
                 type="submit"
-                disabled ={disabledSend}  
+                disabled={disabledSend}
               >
                 Registrarse
               </Button>
-            </>
-          )}
+            )}
+          </>
         </DialogActions>
+        <div className={classes.root}>
+         {loading && ( <LinearProgress />   )}     
+        </div>
       </Dialog>
     </div>
   );
@@ -196,19 +215,24 @@ const mapDispachToProps = (dispatch) => ({
       type: "CLOSE_REGISTER_DIALOG",
     });
   },
-  handleOpenInfo(message){
+  handleOpenInfo(message) {
     dispatch({
       type: "OPEN_INFO_DIALOG",
-      data:message
+      data: message,
     });
   },
-  handleOpenLogin(userEmail){
+  handleToggleCharge() {
+    dispatch({
+      type: "TOGGLE_CHARGE",
+    });
+  },
+  handleOpenLogin(userEmail) {
     this.handleClose();
     dispatch({
       type: "OPEN_LOGIN_DIALOG",
-      data:userEmail      
+      data: userEmail,
     });
-  }
+  },
 });
 
 export default connect(mapStateToProps, mapDispachToProps)(RegisterDialog);

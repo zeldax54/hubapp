@@ -32,7 +32,8 @@ const initialState = {
   infoDialogMsj:"",
   openInfDialog:false,
   urlMidgardRegister:"user/Register",
-  currentUser:{}
+  currentUser:{},
+  openCharge:false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -42,6 +43,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         currentUser:{
            email:action.data,
+           token:''
         }, 
         openLogindialog: true,       
       };
@@ -72,6 +74,12 @@ const reducer = (state = initialState, action) => {
         openInfDialog: true,
 
       };
+      case "TOGGLE_CHARGE":
+        return {
+          ...state,
+          openCharge:!state.openCharge,
+  
+        };
     default:
       return state;
   }
